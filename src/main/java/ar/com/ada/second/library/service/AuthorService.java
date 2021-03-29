@@ -26,7 +26,6 @@ public class AuthorService implements Services<AuthorDTO, Author> {
     @Autowired
     private AuthorRepository authorRepository;
 
-
     @Override
     public AuthorDTO createNew(AuthorDTO dto) {
 
