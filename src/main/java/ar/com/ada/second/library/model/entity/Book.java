@@ -9,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Year;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,5 +42,14 @@ public class Book implements Serializable {
 
     @Column(nullable = false)
     private String bookCondition;
+
+    @ManyToOne
+    @JoinColumn(name = "Author_id", nullable = false, foreignKey = @ForeignKey(name = "fk_Book_Author"))
+    private Author author;
+
+   @OneToMany(mappedBy = "book")
+    private Set<Loan> loans;
+
+
 
 }

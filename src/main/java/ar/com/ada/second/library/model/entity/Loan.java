@@ -29,5 +29,14 @@ public class Loan implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date returnDate;
 
+    @ManyToOne
+    @JoinColumn(name = "Book_id", nullable = false)
+    private Book book;
+
+    @ManyToOne
+    @JoinColumn(name = "User_id", nullable = false)
+    private User user;
+
+
 
 }

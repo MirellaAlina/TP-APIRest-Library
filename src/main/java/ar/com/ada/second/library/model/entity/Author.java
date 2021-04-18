@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,4 +37,7 @@ public class Author implements Serializable {
 
     @Column(nullable = false)
     private String biography;
+
+    @OneToMany(mappedBy = "author")
+    private List<Book> books;
 }

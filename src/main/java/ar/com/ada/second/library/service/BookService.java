@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class BookService implements Services<BookDTO, Book>{
+public class BookService implements Services<BookDTO, Book> {
 
     private BookMapper bookMapper = BookMapper.MAPPER;
 
@@ -27,15 +27,29 @@ public class BookService implements Services<BookDTO, Book>{
     private AvoidingMappingContext context;
 
     @Autowired
+    private AuthorRepository authorRepository;
+
+    @Autowired
     private BookRepository bookRepository;
+
 
     @Override
     public BookDTO createNew(BookDTO dto) {
-        Book book = bookMapper.toEntity(dto, context);
+        return null;
+    }
 
-        bookRepository.save(book);
+    public BookDTO createNew(BookDTO dto, Long id) {
+        Author author = authorRepository
+                .findById(id)
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Author", id));
 
-        BookDTO bookSaved = bookMapper.toDTO(book, context);
+        Book bookToSave = bookMapper.toEntity(dto, context);
+
+        bookToSave.setAuthor(author);
+
+        bookRepository.save(bookToSave);
+
+        BookDTO bookSaved = bookMapper.toDTO(bookToSave, context);
 
         return bookSaved;
     }
@@ -44,9 +58,9 @@ public class BookService implements Services<BookDTO, Book>{
     public List<BookDTO> getAll() {
         List<Book> bookList = bookRepository.findAll();
 
-        List<BookDTO> bookDTOS = bookMapper.toDTO(bookList, context);
+        List<BookDTO> books = bookMapper.toDTO(bookList, context);
 
-        return bookDTOS;
+        return books;
     }
 
     @Override
@@ -63,16 +77,37 @@ public class BookService implements Services<BookDTO, Book>{
 
     @Override
     public BookDTO update(BookDTO dto, Long id) {
-        Optional<Book> bookOptional = bookRepository.findById(id);
+//        Optional<Book> bookOptional = bookRepository.findById(id);
+//
+//        Book bookById = bookOptional
+//                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Book", id));
+//
+//        mergeData(bookById, dto);
+//
+//        bookRepository.save(bookById);
+//
+//        BookDTO bookUpdated = bookMapper.toDTO(bookById, context);
 
-        Book bookById = bookOptional
-                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Book", id));
+//        return bookUpdated;
+        return null;
+    }
 
-        mergeData(bookById, dto);
+    public BookDTO update(BookDTO dto, Long authorId, Long bookId) {
+        Author authorByIdFromDB = authorRepository
+                .findById(authorId)
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Author", authorId));
 
-        bookRepository.save(bookById);
+        Book bookByIdFromDB = bookRepository
+                .findById(bookId)
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Book", bookId));
 
-        BookDTO bookUpdated = bookMapper.toDTO(bookById, context);
+        bookByIdFromDB.setAuthor(authorByIdFromDB);
+
+        mergeData(bookByIdFromDB, dto);
+
+        bookRepository.save(bookByIdFromDB);
+
+        BookDTO bookUpdated = bookMapper.toDTO(bookByIdFromDB, context);
 
         return bookUpdated;
     }
@@ -84,7 +119,7 @@ public class BookService implements Services<BookDTO, Book>{
         Book bookById = bookOptional
                 .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Book", id));
 
-        bookRepository.deleteById(id);
+        bookRepository.delete(bookById);
     }
 
     @Override
